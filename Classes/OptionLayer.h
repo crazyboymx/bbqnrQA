@@ -4,7 +4,7 @@
  * @File: OptionLayer.h
  * $Id: OptionLayer.h v 1.0 2013-12-25 09:12:26 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 10:47:52 $
+ * $Last modified: 2013-12-25 17:03:46 $
  * @brief
  *
  ******************************************************************/
@@ -14,23 +14,41 @@
 
 #include <cocos2d.h>
 #include "Question.h"
+#include <vector>
 
 USING_NS_CC;
+using namespace std;
 
-class OptionLayer: public CCLayerColor {
+class OptionLayer;
+
+class OptionObserver {
+public:
+    virtual ~OptionObserver() { }
+
+    virtual void optionSelected(OptionLayer* option) = 0;
+};
+
+class OptionLayer : public CCLayerColor {
 public:
     OptionLayer();
     virtual ~OptionLayer();
     CREATE_FUNC(OptionLayer);
     virtual bool init();
+    void ccTouchesEnded(CCSet* touches, CCEvent* event);
+    void registerWithTouchDispatcher();
 
-    void setOption(const char* option, bool isAnswer);
+    void addObserver(OptionObserver* observer);
+    void removeObserver(OptionObserver* observer);
+
+    void setOption(string option, bool isAnswer);
+    bool isAnswer() const { return m_isAnswer; }
 
 private:
-    const char     *m_option;
+    string          m_option;
     bool            m_isAnswer;
-    CCLabelBMFont  *m_optionLabel;
-    CCSprite       *m_bgSprite;
+    CCLabelTTF*     m_optionLabel;
+    CCSprite*       m_bgSprite;
+    vector<OptionObserver*> m_observers;
 };
 
 #endif // __OPTIONLAYER_H_

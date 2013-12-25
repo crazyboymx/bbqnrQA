@@ -4,7 +4,7 @@
  * @File: Question.h
  * $Id: Question.h v 1.0 2013-12-25 09:12:26 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 10:10:03 $
+ * $Last modified: 2013-12-25 15:39:51 $
  * @brief
  *
  ******************************************************************/
@@ -17,11 +17,24 @@
 using namespace std;
 
 struct Option {
-    int answer;
-    string opt_a;
-    string opt_b;
-    string opt_c;
-    string opt_d;
+    int     answer;
+    string  opt_a;
+    string  opt_b;
+    string  opt_c;
+    string  opt_d;
+
+    string operator[] (int index) {
+        if (index == 1)
+            return opt_a;
+        else if (index == 2)
+            return opt_b;
+        else if (index == 3)
+            return opt_c;
+        else if (index == 4)
+            return opt_d;
+        else
+            return "";
+    }
 };
 
 class QuestionSet {
@@ -46,8 +59,8 @@ public:
     int count() const { return m_count;}
 private:
     Subject m_subject;
-    string *m_questions;
-    Option *m_options;
+    string* m_questions;
+    Option* m_options;
     int     m_count;
 };
 

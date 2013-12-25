@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
+#include "GameLayer.h"
 
 USING_NS_CC;
 
@@ -15,17 +15,24 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     CCDirector* pDirector = CCDirector::sharedDirector();
     CCEGLView* pEGLView = CCEGLView::sharedOpenGLView();
-
     pDirector->setOpenGLView(pEGLView);
-	
+
+    std::vector<std::string> searchPaths;
+    searchPaths.push_back("fonts");
+    CCFileUtils::sharedFileUtils()->setSearchPaths(searchPaths);
+
     // turn on display FPS
     pDirector->setDisplayStats(true);
-
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = HelloWorld::scene();
+    CCScene *pScene = CCScene::create();
+
+    GameLayer* gamelayer = GameLayer::create();
+    QuestionSet* qs = new QuestionSet(QuestionSet::LinShuiCun_1);
+    gamelayer->setQuestion(qs->question(100), qs->option(100));
+    pScene->addChild(gamelayer);
 
     // run
     pDirector->runWithScene(pScene);
