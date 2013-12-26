@@ -4,7 +4,7 @@
  * @File: GameLayer.cpp
  * $Id: GameLayer.cpp v 1.0 2013-12-26 01:08:55 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 17:04:25 $
+ * $Last modified: 2013-12-26 14:54:13 $
  * @brief
  *
  ******************************************************************/
@@ -74,15 +74,13 @@ bool GameLayer::init() {
 
 void GameLayer::optionSelected(OptionLayer* option) {
     if (option->isAnswer()) {
-    }
-    else {
+        setQuestion(m_level->nextQuesion());
     }
 }
 
-void GameLayer::setQuestion(string question, Option option) {
+void GameLayer::setQuestion(Question question) {
     m_question = question;
-    m_option = option;
-    m_questionLabel->setString(question.c_str());
+    m_questionLabel->setString(question.question.c_str());
     int opt[4] = {1, 2, 3, 4};
     for (int i = 0; i < 4; i++) {
         int s = rand() % 4;
@@ -92,14 +90,14 @@ void GameLayer::setQuestion(string question, Option option) {
     }
 
     string optStr;
-    optStr = "A. "+option[opt[0]];
-    m_option_a->setOption(optStr, opt[0] == option.answer);
-    optStr = "B. "+option[opt[1]];
-    m_option_b->setOption(optStr, opt[1] == option.answer);
-    optStr = "C. "+option[opt[2]];
-    m_option_c->setOption(optStr, opt[2] == option.answer);
-    optStr = "D. "+option[opt[3]];
-    m_option_d->setOption(optStr, opt[3] == option.answer);
+    optStr = "A. "+question.option[opt[0]];
+    m_option_a->setOption(optStr, opt[0] == question.option.answer);
+    optStr = "B. "+question.option[opt[1]];
+    m_option_b->setOption(optStr, opt[1] == question.option.answer);
+    optStr = "C. "+question.option[opt[2]];
+    m_option_c->setOption(optStr, opt[2] == question.option.answer);
+    optStr = "D. "+question.option[opt[3]];
+    m_option_d->setOption(optStr, opt[3] == question.option.answer);
 }
 
 void GameLayer::ccTouchesEnded(CCSet* touches, CCEvent* event) {

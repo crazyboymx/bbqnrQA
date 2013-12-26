@@ -4,7 +4,7 @@
  * @File: Question.cpp
  * $Id: Question.cpp v 1.0 2013-12-25 09:27:15 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 15:38:02 $
+ * $Last modified: 2013-12-26 14:30:57 $
  * @brief
  *
  ******************************************************************/
@@ -180,6 +180,33 @@ string g_QuestionSet_LinShuiCun_1[LINSHUICUN_1_QUESTION_NUM] = {
     "片尾曲的开头是哪对父子在对唱小星星？"
 };
 
+string g_QuestionSet_LinShuiCun_2[LINSHUICUN_2_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_ShaMo_1[SHAMO_1_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_ShaMo_2[SHAMO_2_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_YNSX_1[YNSX_1_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_YNSX_2[YNSX_2_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_YTHD_1[YNSX_1_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_YTHD_2[YNSX_2_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_BaiSiCun_1[BAISICUN_1_QUESTION_NUM] = {
+};
+
+string g_QuestionSet_BaiSiCun_2[BAISICUN_2_QUESTION_NUM] = {
+};
+
 Option g_OptionSet_LinShuiCun_1[LINSHUICUN_1_QUESTION_NUM] = {
     {1, "湖南台", "东方卫视", "浙江台", "中央台"},
     {2, "星期一", "星期五", "星期六", "星期日"},
@@ -338,27 +365,88 @@ Option g_OptionSet_LinShuiCun_1[LINSHUICUN_1_QUESTION_NUM] = {
     {1, "Kimi爸爸和Kimi", "天天爸爸和天天", "石头爸爸和石头", "森碟爸爸和森碟"}
 };
 
+Option g_OptionSet_LinShuiCun_2[LINSHUICUN_2_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_ShaMo_1[SHAMO_1_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_ShaMo_2[SHAMO_2_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_YNSX_1[YNSX_1_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_YNSX_2[YNSX_2_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_YTHD_1[YNSX_1_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_YTHD_2[YNSX_2_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_BaiSiCun_1[BAISICUN_1_QUESTION_NUM] = {
+};
+
+Option g_OptionSet_BaiSiCun_2[BAISICUN_2_QUESTION_NUM] = {
+};
+
+string* g_QuestionList[QuestionSet::MaxSubject] = {
+    g_QuestionSet_LinShuiCun_1,
+    g_QuestionSet_LinShuiCun_2,
+    g_QuestionSet_ShaMo_1,
+    g_QuestionSet_ShaMo_2,
+    g_QuestionSet_YNSX_1,
+    g_QuestionSet_YNSX_2,
+    g_QuestionSet_YTHD_1,
+    g_QuestionSet_YTHD_2,
+    g_QuestionSet_BaiSiCun_1,
+    g_QuestionSet_BaiSiCun_2
+};
+
+Option* g_OptionList[QuestionSet::MaxSubject] = {
+    g_OptionSet_LinShuiCun_1,
+    g_OptionSet_LinShuiCun_2,
+    g_OptionSet_ShaMo_1,
+    g_OptionSet_ShaMo_2,
+    g_OptionSet_YNSX_1,
+    g_OptionSet_YNSX_2,
+    g_OptionSet_YTHD_1,
+    g_OptionSet_YTHD_2,
+    g_OptionSet_BaiSiCun_1,
+    g_OptionSet_BaiSiCun_2
+};
+
+int g_QuestionListCount[QuestionSet::MaxSubject] = {
+    LINSHUICUN_1_QUESTION_NUM,
+    LINSHUICUN_2_QUESTION_NUM,
+    SHAMO_1_QUESTION_NUM,
+    SHAMO_2_QUESTION_NUM,
+    YNSX_1_QUESTION_NUM,
+    YNSX_1_QUESTION_NUM,
+    YTHD_1_QUESTION_NUM,
+    YTHD_2_QUESTION_NUM,
+    BAISICUN_1_QUESTION_NUM,
+    BAISICUN_2_QUESTION_NUM
+};
+
 QuestionSet::QuestionSet(Subject subject)
     : m_subject(subject)
-    , m_questions(0)
-    , m_options(0)
+    , m_count(g_QuestionListCount[subject])
 {
-    if (m_subject == LinShuiCun_1) {
-        m_questions = g_QuestionSet_LinShuiCun_1;
-        m_options = g_OptionSet_LinShuiCun_1;
-        m_count = LINSHUICUN_1_QUESTION_NUM;
+    Question q;
+    for (int i = 0; i < m_count; i++) {
+        q.question = g_QuestionList[m_subject][i];
+        q.option = g_OptionList[m_subject][i];
+        q.valid = true;
+        m_questions.push_back(q);
     }
 }
 
-string QuestionSet::question(int index) {
+Question QuestionSet::question(int index) {
     if (index < 0 || index >= m_count)
-        return "";
+        return Question();
     return m_questions[index];
-}
-
-Option QuestionSet::option(int index) {
-    if (index < 0 || index >= m_count)
-        return Option();
-    return m_options[index];
 }
 

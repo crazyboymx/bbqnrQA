@@ -4,7 +4,7 @@
  * @File: OptionLayer.cpp
  * $Id: OptionLayer.cpp v 1.0 2013-12-26 01:08:55 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 17:03:52 $
+ * $Last modified: 2013-12-26 14:59:10 $
  * @brief
  *
  ******************************************************************/
@@ -30,7 +30,7 @@ bool OptionLayer::init() {
 
         CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
         CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-        CCSize contentSize(400, 100);
+        CCSize contentSize(visibleSize.width-100, 100);
 
         m_optionLabel = CCLabelTTF::create("", "Marker Felt.ttf", 40,
             contentSize, kCCTextAlignmentLeft, kCCVerticalTextAlignmentCenter);
@@ -79,5 +79,6 @@ void OptionLayer::setOption(string option, bool isAnswer) {
     m_option = option;
     m_isAnswer = isAnswer;
     m_optionLabel->setString(option.c_str());
+    this->setColor(ccc3(233, 233, 122));
 }
 

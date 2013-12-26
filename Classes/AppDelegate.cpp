@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "GameLayer.h"
+#include "Season.h"
 
 USING_NS_CC;
 
@@ -30,8 +31,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCScene *pScene = CCScene::create();
 
     GameLayer* gamelayer = GameLayer::create();
-    QuestionSet* qs = new QuestionSet(QuestionSet::LinShuiCun_1);
-    gamelayer->setQuestion(qs->question(100), qs->option(100));
+    Season* s = new Season(Season::Season_1);
+    gamelayer->setLevel(s->level(1));
     pScene->addChild(gamelayer);
 
     // run

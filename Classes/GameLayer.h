@@ -4,7 +4,7 @@
  * @File: GameLayer.h
  * $Id: GameLayer.h v 1.0 2013-12-26 01:08:43 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 17:03:29 $
+ * $Last modified: 2013-12-26 14:54:33 $
  * @brief
  *
  ******************************************************************/
@@ -13,8 +13,8 @@
 #define __GAMELAYER_H_
 
 #include <cocos2d.h>
-#include "Question.h"
 #include "OptionLayer.h"
+#include "Level.h"
 
 using namespace std;
 USING_NS_CC;
@@ -26,7 +26,11 @@ public:
     CREATE_FUNC(GameLayer);
     virtual bool init();
 
-    void setQuestion(string question, Option option);
+    void setLevel(Level* l) {
+        m_level = l;
+        l->shuffleQuestion();
+        setQuestion(m_level->nextQuesion());}
+    void setQuestion(Question question);
 
     void ccTouchesEnded(CCSet* touches, CCEvent* event);
     void registerWithTouchDispatcher();
@@ -35,8 +39,8 @@ private:
     void optionSelected(OptionLayer* option);
 
 private:
-    string m_question;
-    Option m_option;
+    Level* m_level;
+    Question m_question;
 
     OptionLayer*    m_option_a;
     OptionLayer*    m_option_b;

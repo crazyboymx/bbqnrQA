@@ -4,7 +4,7 @@
  * @File: Question.h
  * $Id: Question.h v 1.0 2013-12-25 09:12:26 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 15:39:51 $
+ * $Last modified: 2013-12-26 10:50:22 $
  * @brief
  *
  ******************************************************************/
@@ -13,6 +13,7 @@
 #define __QUESTION_H__
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -37,6 +38,13 @@ struct Option {
     }
 };
 
+struct Question {
+    string question;
+    Option option;
+    bool valid;
+    Question() : valid(false) { }
+};
+
 class QuestionSet {
 public:
     enum Subject {
@@ -49,18 +57,17 @@ public:
         YanTaiHaiDao_1,
         YanTaiHaiDao_2,
         BaiSiCun_1,
-        BaiSiCun_2
+        BaiSiCun_2,
+        MaxSubject
     };
 
     QuestionSet(Subject sub);
 
-    string question(int index);
-    Option option(int index);
+    Question question(int index);
     int count() const { return m_count;}
 private:
     Subject m_subject;
-    string* m_questions;
-    Option* m_options;
+    vector<Question> m_questions;
     int     m_count;
 };
 
