@@ -4,13 +4,16 @@
  * @File: Season.cpp
  * $Id: Season.cpp v 1.0 2013-12-26 13:36:20 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 17:26:12 $
+ * $Last modified: 2013-12-26 20:31:43 $
  * @brief
  *
  ******************************************************************/
 
 #include "Season.h"
 #include "Question.h"
+#include <cocos2d.h>
+
+using namespace cocos2d;
 
 #define LEVEL_QUESTION_MAX_COUNT    10
 
@@ -79,8 +82,9 @@ void Season::initRecord(const SeasonRecord& record) {
     int count = record.record.size();
     for (int i = 0; i < count; i++) {
         lr = record.record[i];
-        if (m_levels.find(lr.level) != m_levels.end())
+        if (m_levels.find(lr.level) != m_levels.end()) {
             m_levels[lr.level]->initRecord(lr);
+        }
     }
 }
 
@@ -91,6 +95,7 @@ SeasonRecord Season::record() const {
 
     map<int, Level*>::const_iterator pos = m_levels.begin();
     for (; pos != m_levels.end(); ++pos) {
+        LevelRecord r = pos->second->record();
         sr.record.push_back(pos->second->record());
     }
     return sr;

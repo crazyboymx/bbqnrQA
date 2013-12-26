@@ -4,7 +4,7 @@
  * @File: Level.cpp
  * $Id: Level.cpp v 1.0 2013-12-26 10:11:14 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 17:22:59 $
+ * $Last modified: 2013-12-26 20:30:51 $
  * @brief
  *
  ******************************************************************/
@@ -56,6 +56,7 @@ LevelRecord Level::record() const {
     lr.level = m_level;
     lr.locked = m_locked;
     lr.passCount = m_passCountRecord;
+    return lr;
 }
 
 bool Level::fail() const {

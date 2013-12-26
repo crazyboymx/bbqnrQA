@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "GameLayer.h"
 #include "Season.h"
+#include "Record.h"
 
 USING_NS_CC;
 
@@ -34,6 +35,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     Season* s = new Season(Season::Season_1);
     gamelayer->setLevel(s->level(1));
     pScene->addChild(gamelayer);
+    Record::instance()->load();
 
     // run
     pDirector->runWithScene(pScene);

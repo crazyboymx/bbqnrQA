@@ -13,10 +13,10 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/Level.cpp \
                    ../../Classes/Season.cpp \
                    ../../Classes/Record.cpp \
-                   ../../Classes/DBUtil.cpp \
                    ../../Classes/GameLayer.cpp
 
-LOCAL_SRC_FILES += ../../Classes/sqlite/sqlite3.c
+#LOCAL_SRC_FILES += ../../Classes/DBUtil.cpp \
+                   ../../Classes/sqlite/sqlite3.c
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 

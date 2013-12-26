@@ -4,7 +4,7 @@
  * @File: Record.h
  * $Id: Record.h v 1.0 2013-12-26 14:31:47 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 19:36:58 $
+ * $Last modified: 2013-12-26 21:44:04 $
  * @brief
  *
  ******************************************************************/
@@ -14,7 +14,6 @@
 
 #include <vector>
 #include <map>
-#include "DBUtil.h"
 
 using namespace std;
 
@@ -28,22 +27,30 @@ struct SeasonRecord {
     int seasonId;
     bool locked;
     vector<LevelRecord> record;
+    SeasonRecord()
+        : seasonId(-1)
+        , locked(true)
+    {
+    }
 };
 
-class Record : private DBUtilSender {
+class Record {
 public:
-    Record() { };
+    static Record* instance();
     virtual ~Record() { }
 
     void load();
     void save();
-    void setSeasonRecord(const SeasonRecord& record);
+    void addSeasonRecord(const SeasonRecord& record);
+    SeasonRecord* seasonRecord(int id);
 
-private:
-    virtual void queryCallBack(int column, char** value, char** name);
+protected:
+    Record() { }
+    Record(const Record&) { }
 
 private:
     map<int, SeasonRecord> m_record;
+    static Record* m_instance;
 };
 
 #endif // __RECORD_H_

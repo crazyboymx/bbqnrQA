@@ -4,7 +4,7 @@
  * @File: Record.cpp
  * $Id: Record.cpp v 1.0 2013-12-26 14:33:02 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 19:53:55 $
+ * $Last modified: 2013-12-26 21:44:27 $
  * @brief
  *
  ******************************************************************/
@@ -15,29 +15,67 @@
 
 //USING_NS_CC;
 
-string dbPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath() + "save.db";
+Record* Record::m_instance = NULL;
+
+Record* Record::instance() {
+    if (m_instance == NULL)
+        m_instance = new Record();
+    return m_instance;
+}
 
 void Record::load() {
+    string dbPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath() + "save.db";
     cocos2d::CCLog("dbPath: %s", dbPath.c_str());
     FILE* fp = fopen(dbPath.c_str(), "rb");
     if (fp == NULL)
         return;
 
-    fread(this, sizeof(Record), 1, fp);
+    int count, levelCnt;
+    LevelRecord lr;
+    fread(&count, sizeof(uint32_t), 1, fp);
+    for (int i = 0; i < count; ++i) {
+        SeasonRecord sr;
+        fread(&sr.seasonId, sizeof(uint32_t), 1, fp);
+        fread(&sr.locked, sizeof(bool), 1, fp);
+        fread(&levelCnt, sizeof(uint32_t), 1, fp);
+        for (int j = 0; j < levelCnt; ++j) {
+            fread(&lr, sizeof(LevelRecord), 1, fp);
+            sr.record.push_back(lr);
+        }
+        addSeasonRecord(sr);
+    }
     fclose(fp);
 }
 
 void Record::save() {
+    string dbPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath() + "save.db";
     cocos2d::CCLog("dbPath: %s", dbPath.c_str());
     FILE* fp = fopen(dbPath.c_str(), "wb");
     if (fp == NULL)
         return;
 
-    fwrite(this, sizeof(Record), 1, fp);
+    int count = m_record.size();
+    fwrite(&count, sizeof(uint32_t), 1, fp);
+    map<int, SeasonRecord>::iterator pos = m_record.begin();
+    for (; pos != m_record.end(); ++pos) {
+        fwrite(&(pos->second.seasonId), sizeof(uint32_t), 1, fp);
+        fwrite(&(pos->second.locked), sizeof(bool), 1, fp);
+        int levelCnt = pos->second.record.size();
+        fwrite(&levelCnt, sizeof(uint32_t), 1, fp);
+        for (int i = 0; i < levelCnt; ++i) {
+            fwrite(&(pos->second.record[i]), sizeof(LevelRecord), 1, fp);
+        }
+    }
     fclose(fp);
 }
 
-void Record::setSeasonRecord(const SeasonRecord& record) {
+void Record::addSeasonRecord(const SeasonRecord& record) {
     m_record[record.seasonId] = record;
+}
+
+SeasonRecord* Record::seasonRecord(int id) {
+    if (m_record.find(id) != m_record.end())
+        return &m_record[id];
+    return NULL;
 }
 
