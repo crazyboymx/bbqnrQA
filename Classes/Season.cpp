@@ -4,7 +4,7 @@
  * @File: Season.cpp
  * $Id: Season.cpp v 1.0 2013-12-26 13:36:20 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 14:35:17 $
+ * $Last modified: 2013-12-26 17:26:12 $
  * @brief
  *
  ******************************************************************/
@@ -40,9 +40,10 @@ QuestionSet* g_SeasonQuestions[Season::MaxSeason] = {
     new QuestionSet(QuestionSet::BaiSiCun_2)
 };
 
-Season::Season(Season::SeasonType type)
-    : m_type(type)
-    , m_title(g_SeasonTitles[type])
+Season::Season(Season::SeasonId id)
+    : m_id(id)
+    , m_title(g_SeasonTitles[id])
+    , m_locked(true)
 {
     initLevels();
 }
@@ -52,7 +53,9 @@ Season::~Season() {
 }
 
 void Season::initLevels() {
-    QuestionSet* q = g_SeasonQuestions[m_type];
+    clearLevelData();
+
+    QuestionSet* q = g_SeasonQuestions[m_id];
     int qCount = q->count();
     int levelCount = qCount / LEVEL_QUESTION_MAX_COUNT+1;
     for (int i = 0; i < levelCount; i++) {
@@ -62,34 +65,61 @@ void Season::initLevels() {
         for ( int j = start; j < end && j < qCount; j++) {
             level->addQuestion(q->question(j));
         }
-        m_levels.push_back(level);
+        m_levels.insert(pair<int, Level*>(level->level(), level));
     }
 }
 
 void Season::initRecord(const SeasonRecord& record) {
+    if (record.seasonId != m_id)
+        return;
+
+    m_locked = record.locked;
+
+    LevelRecord lr;
+    int count = record.record.size();
+    for (int i = 0; i < count; i++) {
+        lr = record.record[i];
+        if (m_levels.find(lr.level) != m_levels.end())
+            m_levels[lr.level]->initRecord(lr);
+    }
+}
+
+SeasonRecord Season::record() const {
+    SeasonRecord sr;
+    sr.seasonId = m_id;
+    sr.locked = m_locked;
+
+    map<int, Level*>::const_iterator pos = m_levels.begin();
+    for (; pos != m_levels.end(); ++pos) {
+        sr.record.push_back(pos->second->record());
+    }
+    return sr;
 }
 
 int Season::starCount() const {
     int count = 0;
-    for (int i = levelCount() - 1; i >= 0; i--) {
-        count += m_levels[i]->starCount();
+    map<int, Level*>::const_iterator pos = m_levels.begin();
+    for (; pos != m_levels.end(); ++pos) {
+        count += pos->second->starCount();
     }
     return count;
 }
 
 bool Season::pass() const {
-    return m_levels[levelCount()-1]->hasPassedOnce();
+    return m_levels.rbegin()->second->hasPassedOnce();
 }
 
 Level* Season::level(int index) {
-    if (index >= 0 && index < levelCount())
+    if (m_levels.find(index) != m_levels.end())
         return m_levels[index];
     return NULL;
 }
 
 void Season::clearLevelData() {
-    for (int i = levelCount() - 1; i >= 0; i--) {
-        delete m_levels[i];
+    map<int, Level*>::iterator pos = m_levels.begin();
+    for (; pos != m_levels.end(); ++pos) {
+        delete pos->second;
+        pos->second = NULL;
     }
     m_levels.clear();
 }

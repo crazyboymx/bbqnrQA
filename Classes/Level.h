@@ -4,7 +4,7 @@
  * @File: Level.h
  * $Id: Level.h v 1.0 2013-12-26 09:06:51 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 13:29:59 $
+ * $Last modified: 2013-12-26 17:16:08 $
  * @brief
  *
  ******************************************************************/
@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include "Question.h"
+#include "Record.h"
 
 using namespace std;
 
@@ -28,7 +29,8 @@ public:
 
     void resetProgress();
     void resetRecord();
-    void setPassRecord(int count);
+    void initRecord(const LevelRecord& record);
+    LevelRecord record() const;
 
     int level() const { return m_level; }
     int currentProgress() const { return m_progress; }
@@ -42,9 +44,12 @@ public:
     bool pass() const { return !fail() && pass(m_passCount); }
     bool hasPassedOnce() const { return pass(m_passCountRecord); }
     bool fail() const;
+    bool locked() const { return m_locked; }
 
     void passCurrentQuestion();
     void failCurrentQuestion();
+    void unlock() { m_locked = false; }
+    void lock() { m_locked = true; }
     Question nextQuesion();
     Question prevQuesion();
     void shuffleQuestion();
@@ -55,6 +60,7 @@ private:
 
 private:
     int m_level;
+    int m_locked;
 
     int m_passCount;
     int m_failCount;

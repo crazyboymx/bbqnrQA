@@ -4,7 +4,7 @@
  * @File: Level.cpp
  * $Id: Level.cpp v 1.0 2013-12-26 10:11:14 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 13:30:56 $
+ * $Last modified: 2013-12-26 17:22:59 $
  * @brief
  *
  ******************************************************************/
@@ -16,6 +16,7 @@
 
 Level::Level(int level) {
     m_level = level;
+    m_locked = true;
     m_passCountRecord = 0;
     resetProgress();
 }
@@ -38,11 +39,23 @@ void Level::resetProgress() {
 }
 
 void Level::resetRecord() {
-    setPassRecord(0);
+    m_passCountRecord = 0;
+    m_locked = true;
 }
 
-void Level::setPassRecord(int count) {
-    m_passCountRecord = count;
+void Level::initRecord(const LevelRecord& record) {
+    if (record.level != m_level)
+        return;
+
+    m_passCountRecord = record.passCount;
+    m_locked = record.locked;
+}
+
+LevelRecord Level::record() const {
+    LevelRecord lr;
+    lr.level = m_level;
+    lr.locked = m_locked;
+    lr.passCount = m_passCountRecord;
 }
 
 bool Level::fail() const {

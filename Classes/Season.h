@@ -4,7 +4,7 @@
  * @File: Season.h
  * $Id: Season.h v 1.0 2013-12-26 11:03:41 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 14:36:26 $
+ * $Last modified: 2013-12-26 16:58:54 $
  * @brief
  *
  ******************************************************************/
@@ -14,14 +14,14 @@
 
 #include "Level.h"
 #include "Record.h"
-#include <vector>
+#include <map>
 #include <string>
 
 using namespace std;
 
 class Season {
 public:
-    enum SeasonType {
+    enum SeasonId {
         Season_1,
         Season_2,
         Season_3,
@@ -36,11 +36,12 @@ public:
     };
     static int seasonCount() { return MaxSeason; }
 
-    Season(SeasonType type);
+    Season(SeasonId id);
     virtual ~Season();
 
     void initLevels();
     void initRecord(const SeasonRecord& record);
+    SeasonRecord record() const;
 
     string title() const { return m_title; }
     int levelCount() const { return m_levels.size(); }
@@ -48,13 +49,18 @@ public:
     bool pass() const;
     Level* level(int index);
 
+    void unlock() { m_locked = false; }
+    bool locked() const { return m_locked; }
+
 private:
     void clearLevelData();
 
 private:
-    SeasonType m_type;
+    SeasonId m_id;
+    bool m_locked;
+
     string m_title;
-    vector<Level*> m_levels;
+    map<int, Level*> m_levels;
 };
 
 #endif // __SEASON_H__
