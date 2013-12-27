@@ -4,7 +4,7 @@
  * @File: OptionLayer.h
  * $Id: OptionLayer.h v 1.0 2013-12-25 09:12:26 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-25 17:03:46 $
+ * $Last modified: 2013-12-27 17:20:46 $
  * @brief
  *
  ******************************************************************/
@@ -25,7 +25,7 @@ class OptionObserver {
 public:
     virtual ~OptionObserver() { }
 
-    virtual void optionSelected(OptionLayer* option) = 0;
+    virtual void onOptionSelected(OptionLayer* option) = 0;
 };
 
 class OptionLayer : public CCLayerColor {

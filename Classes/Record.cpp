@@ -4,7 +4,7 @@
  * @File: Record.cpp
  * $Id: Record.cpp v 1.0 2013-12-26 14:33:02 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 21:44:27 $
+ * $Last modified: 2013-12-27 18:37:27 $
  * @brief
  *
  ******************************************************************/
@@ -32,6 +32,8 @@ void Record::load() {
 
     int count, levelCnt;
     LevelRecord lr;
+    fread(&this->m_totalPass, sizeof(uint32_t), 1, fp);
+    fread(&this->m_totalFail, sizeof(uint32_t), 1, fp);
     fread(&count, sizeof(uint32_t), 1, fp);
     for (int i = 0; i < count; ++i) {
         SeasonRecord sr;
@@ -44,6 +46,7 @@ void Record::load() {
         }
         addSeasonRecord(sr);
     }
+    fread(&this->m_config, sizeof(Config), 1, fp);
     fclose(fp);
 }
 
@@ -55,6 +58,8 @@ void Record::save() {
         return;
 
     int count = m_record.size();
+    fwrite(&this->m_totalPass, sizeof(uint32_t), 1, fp);
+    fwrite(&this->m_totalFail, sizeof(uint32_t), 1, fp);
     fwrite(&count, sizeof(uint32_t), 1, fp);
     map<int, SeasonRecord>::iterator pos = m_record.begin();
     for (; pos != m_record.end(); ++pos) {
@@ -66,6 +71,7 @@ void Record::save() {
             fwrite(&(pos->second.record[i]), sizeof(LevelRecord), 1, fp);
         }
     }
+    fwrite(&this->m_config, sizeof(Config), 1, fp);
     fclose(fp);
 }
 

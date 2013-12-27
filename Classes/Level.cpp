@@ -4,7 +4,7 @@
  * @File: Level.cpp
  * $Id: Level.cpp v 1.0 2013-12-26 10:11:14 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 20:30:51 $
+ * $Last modified: 2013-12-27 17:06:51 $
  * @brief
  *
  ******************************************************************/
@@ -65,12 +65,14 @@ bool Level::fail() const {
 
 void Level::passCurrentQuestion() {
     m_passCount++;
+    Record::instance()->incTotalPass();
     if (m_passCount > m_passCountRecord)
         m_passCountRecord = m_passCount;
 }
 
 void Level::failCurrentQuestion() {
     m_failCount++;
+    Record::instance()->incTotalFail();
 }
 
 Question Level::nextQuesion() {

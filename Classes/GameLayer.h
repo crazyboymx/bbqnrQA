@@ -4,7 +4,7 @@
  * @File: GameLayer.h
  * $Id: GameLayer.h v 1.0 2013-12-26 01:08:43 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 14:54:33 $
+ * $Last modified: 2013-12-27 18:40:08 $
  * @brief
  *
  ******************************************************************/
@@ -26,20 +26,25 @@ public:
     CREATE_FUNC(GameLayer);
     virtual bool init();
 
-    void setLevel(Level* l) {
-        m_level = l;
-        l->shuffleQuestion();
-        setQuestion(m_level->nextQuesion());}
-    void setQuestion(Question question);
+    void setLevel(Level* l) { m_level = l; }
+    void startLevel();
 
     void ccTouchesEnded(CCSet* touches, CCEvent* event);
     void registerWithTouchDispatcher();
 
 private:
-    void optionSelected(OptionLayer* option);
+    void onOptionSelected(OptionLayer* option);
+    void nextQuestion();
+    void updateQuestionUI();
+    void answerCorrect();
+    void answerWrong();
+    void levelComplete();
+    void levelPass();
+    void levelFail();
 
 private:
     Level* m_level;
+    bool m_levelPassed;
     Question m_question;
 
     OptionLayer*    m_option_a;

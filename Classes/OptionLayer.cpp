@@ -4,15 +4,13 @@
  * @File: OptionLayer.cpp
  * $Id: OptionLayer.cpp v 1.0 2013-12-26 01:08:55 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 14:59:10 $
+ * $Last modified: 2013-12-27 17:20:45 $
  * @brief
  *
  ******************************************************************/
 
 #include "OptionLayer.h"
 #include <algorithm>
-
-using namespace cocos2d;
 
 OptionLayer::OptionLayer() {
     m_option = "";
@@ -59,7 +57,7 @@ void OptionLayer::ccTouchesEnded(CCSet* touches, CCEvent* event) {
         this->setColor(ccc3(255, 0, 0));
     vector<OptionObserver*>::iterator pos = m_observers.begin();
     for (;pos != m_observers.end(); ++pos) {
-        (*pos)->optionSelected(this);
+        (*pos)->onOptionSelected(this);
     }
 }
 

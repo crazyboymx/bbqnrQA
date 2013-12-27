@@ -4,7 +4,7 @@
  * @File: GameLayer.cpp
  * $Id: GameLayer.cpp v 1.0 2013-12-26 01:08:55 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 14:54:13 $
+ * $Last modified: 2013-12-27 18:40:24 $
  * @brief
  *
  ******************************************************************/
@@ -15,7 +15,10 @@
 
 using namespace cocos2d;
 
-GameLayer::GameLayer() {
+GameLayer::GameLayer()
+    : m_level(NULL)
+    , m_levelPassed(false)
+{
 }
 
 GameLayer::~GameLayer() {
@@ -72,15 +75,32 @@ bool GameLayer::init() {
     return bRet;
 }
 
-void GameLayer::optionSelected(OptionLayer* option) {
-    if (option->isAnswer()) {
-        setQuestion(m_level->nextQuesion());
-    }
+void GameLayer::startLevel() {
+    if (m_level == NULL)
+        return;
+
+    m_level->shuffleQuestion();
+    m_level->resetProgress();
+    nextQuestion();
 }
 
-void GameLayer::setQuestion(Question question) {
-    m_question = question;
-    m_questionLabel->setString(question.question.c_str());
+void GameLayer::nextQuestion() {
+    m_question = m_level->nextQuesion();
+    if (m_question.valid)
+        updateQuestionUI();
+    else
+        levelComplete();
+}
+
+void GameLayer::onOptionSelected(OptionLayer* option) {
+    if (option->isAnswer())
+        answerCorrect();
+    else
+        answerWrong();
+}
+
+void GameLayer::updateQuestionUI() {
+    m_questionLabel->setString(m_question.question.c_str());
     int opt[4] = {1, 2, 3, 4};
     for (int i = 0; i < 4; i++) {
         int s = rand() % 4;
@@ -90,14 +110,39 @@ void GameLayer::setQuestion(Question question) {
     }
 
     string optStr;
-    optStr = "A. "+question.option[opt[0]];
-    m_option_a->setOption(optStr, opt[0] == question.option.answer);
-    optStr = "B. "+question.option[opt[1]];
-    m_option_b->setOption(optStr, opt[1] == question.option.answer);
-    optStr = "C. "+question.option[opt[2]];
-    m_option_c->setOption(optStr, opt[2] == question.option.answer);
-    optStr = "D. "+question.option[opt[3]];
-    m_option_d->setOption(optStr, opt[3] == question.option.answer);
+    optStr = "A. "+m_question.option[opt[0]];
+    m_option_a->setOption(optStr, opt[0] == m_question.option.answer);
+    optStr = "B. "+m_question.option[opt[1]];
+    m_option_b->setOption(optStr, opt[1] == m_question.option.answer);
+    optStr = "C. "+m_question.option[opt[2]];
+    m_option_c->setOption(optStr, opt[2] == m_question.option.answer);
+    optStr = "D. "+m_question.option[opt[3]];
+    m_option_d->setOption(optStr, opt[3] == m_question.option.answer);
+}
+
+void GameLayer::answerCorrect() {
+    if (m_levelPassed == false && m_level->pass()) {
+        m_levelPassed = true;
+        levelPass();
+    }
+    nextQuestion();
+}
+
+void GameLayer::answerWrong() {
+    if (m_level->fail())
+        levelFail();
+    else
+        nextQuestion();
+}
+
+void GameLayer::levelComplete() {
+}
+
+void GameLayer::levelPass() {
+}
+
+void GameLayer::levelFail() {
+    levelComplete();
 }
 
 void GameLayer::ccTouchesEnded(CCSet* touches, CCEvent* event) {

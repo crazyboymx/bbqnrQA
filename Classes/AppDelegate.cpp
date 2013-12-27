@@ -33,7 +33,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     GameLayer* gamelayer = GameLayer::create();
     Season* s = new Season(Season::Season_1);
-    gamelayer->setLevel(s->level(1));
+    gamelayer->setLevel(s->level(2));
+    gamelayer->startLevel();
     pScene->addChild(gamelayer);
     Record::instance()->load();
 

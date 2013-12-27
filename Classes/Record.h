@@ -4,7 +4,7 @@
  * @File: Record.h
  * $Id: Record.h v 1.0 2013-12-26 14:31:47 maxing $
  * $Author: maxing <xm.crazyboy@gmail.com> $
- * $Last modified: 2013-12-26 21:44:04 $
+ * $Last modified: 2013-12-27 17:42:34 $
  * @brief
  *
  ******************************************************************/
@@ -16,6 +16,11 @@
 #include <map>
 
 using namespace std;
+
+struct Config {
+    bool mute;
+    bool bgMusic;
+};
 
 struct LevelRecord {
     int level;
@@ -41,15 +46,20 @@ public:
 
     void load();
     void save();
+    void incTotalPass() { m_totalPass++; }
+    void incTotalFail() { m_totalFail++; }
     void addSeasonRecord(const SeasonRecord& record);
     SeasonRecord* seasonRecord(int id);
 
 protected:
-    Record() { }
+    Record() : m_totalPass(0), m_totalFail(0) { }
     Record(const Record&) { }
 
 private:
+    Config m_config;
     map<int, SeasonRecord> m_record;
+    int m_totalPass;
+    int m_totalFail;
     static Record* m_instance;
 };
 
