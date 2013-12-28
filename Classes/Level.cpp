@@ -14,8 +14,9 @@
 #include <cstdlib>
 #include <algorithm>
 
-Level::Level(int level) {
+Level::Level(int level, int seasonId) {
     m_level = level;
+    m_seasonId = seasonId;
     m_locked = true;
     m_passCountRecord = 0;
     resetProgress();

@@ -21,7 +21,7 @@ using namespace std;
 
 class Level {
 public:
-    Level(int level);
+    Level(int level, int seasonId);
     virtual ~Level();
 
     void clearQuestions();
@@ -60,8 +60,9 @@ private:
 
 private:
     int m_level;
-    int m_locked;
+    int m_seasonId;
 
+    int m_locked;
     int m_passCount;
     int m_failCount;
     int m_progress;

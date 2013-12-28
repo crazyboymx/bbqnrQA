@@ -9,13 +9,12 @@
  *
  ******************************************************************/
 
+#include "Config.h"
 #include "Season.h"
 #include "Question.h"
 #include <cocos2d.h>
 
 using namespace cocos2d;
-
-#define LEVEL_QUESTION_MAX_COUNT    10
 
 string g_SeasonTitles[Season::MaxSeason] = {
     "第一期灵水村上",
@@ -60,11 +59,11 @@ void Season::initLevels() {
 
     QuestionSet* q = g_SeasonQuestions[m_id];
     int qCount = q->count();
-    int levelCount = qCount / LEVEL_QUESTION_MAX_COUNT+1;
+    int levelCount = qCount / MAX_LEVEL_QUESTION_COUNT+1;
     for (int i = 0; i < levelCount; i++) {
-        Level* level = new Level(i+1);
-        int start = i * LEVEL_QUESTION_MAX_COUNT;
-        int end = start + LEVEL_QUESTION_MAX_COUNT;
+        Level* level = new Level(i+1, m_id);
+        int start = i * MAX_LEVEL_QUESTION_COUNT;
+        int end = start + MAX_LEVEL_QUESTION_COUNT;
         for ( int j = start; j < end && j < qCount; j++) {
             level->addQuestion(q->question(j));
         }

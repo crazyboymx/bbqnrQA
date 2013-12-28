@@ -9,11 +9,23 @@
  *
  ******************************************************************/
 
+#include "Config.h"
 #include "GameLayer.h"
 #include <cstdlib>
 #include <algorithm>
 
 using namespace cocos2d;
+
+GameLayer* GameLayer::m_sharedLayer = NULL;
+
+GameLayer* GameLayer::sharedGameLayer() {
+    if (m_sharedLayer == NULL) {
+        m_sharedLayer = GameLayer::create();
+        m_sharedLayer->retain();
+    }
+
+    return m_sharedLayer;
+}
 
 GameLayer::GameLayer()
     : m_level(NULL)
@@ -30,41 +42,41 @@ bool GameLayer::init() {
         CCLayer::init();
         CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
         CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+        CCSize optionContentSize(OPTIONLAYER_CONTENT_WIDTH, OPTIONLAYER_CONTENT_HEIGHT);
         CCLog("origin %0.2f, %0.2f, visibleSize %0.2f, %0.2f", origin.x, origin.y, visibleSize.width, visibleSize.height);
 
         m_option_a = OptionLayer::create();
-        CCSize optionContentSize = m_option_a->getContentSize();
         m_option_a->ignoreAnchorPointForPosition(false);
-        m_option_a->setPosition(origin.x+visibleSize.width/2, origin.y+(optionContentSize.height+50)*3+100);
+        m_option_a->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 3 + 60);
         m_option_a->setAnchorPoint(CCPoint(0.5f, 0.0f));
         this->addChild(m_option_a);
         m_option_a->addObserver(this);
 
         m_option_b = OptionLayer::create();
         m_option_b->ignoreAnchorPointForPosition(false);
-        m_option_b->setPosition(origin.x+visibleSize.width/2, origin.y+(optionContentSize.height+50)*2+100);
+        m_option_b->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 2 + 60);
         m_option_b->setAnchorPoint(CCPoint(0.5f, 0.0f));
         this->addChild(m_option_b);
         m_option_b->addObserver(this);
 
         m_option_c = OptionLayer::create();
         m_option_c->ignoreAnchorPointForPosition(false);
-        m_option_c->setPosition(origin.x+visibleSize.width/2, origin.y+(optionContentSize.height+50)*1+100);
+        m_option_c->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 1 + 60);
         m_option_c->setAnchorPoint(CCPoint(0.5f, 0.0f));
         this->addChild(m_option_c);
         m_option_c->addObserver(this);
 
         m_option_d = OptionLayer::create();
         m_option_d->ignoreAnchorPointForPosition(false);
-        m_option_d->setPosition(origin.x+visibleSize.width/2, origin.y+(optionContentSize.height+50)*0+100);
+        m_option_d->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 0 + 60);
         m_option_d->setAnchorPoint(CCPoint(0.5f, 0.0f));
         this->addChild(m_option_d);
         m_option_d->addObserver(this);
 
-        m_questionLabel = CCLabelTTF::create("", "Marker Felt.ttf", 40,
-            CCSizeMake(visibleSize.width, 300), kCCTextAlignmentCenter, kCCVerticalTextAlignmentCenter);
+        m_questionLabel = CCLabelTTF::create("", "Marker Felt.ttf", QUESTION_TEXT_SIZE,
+            CCSizeMake(GAMELAYER_QUESTION_WIDTH, GAMELAYER_QUESTION_HEIGHT), kCCTextAlignmentCenter, kCCVerticalTextAlignmentCenter);
         m_questionLabel->setAnchorPoint(CCPoint(0.0, 0.0));
-        m_questionLabel->setPosition(CCPoint(origin.x, origin.y+(optionContentSize.height+50)*5+100));
+        m_questionLabel->setPosition(CCPoint(origin.x, origin.y + (visibleSize.height - GAMELAYER_QUESTION_HEIGHT)));
         this->addChild(m_questionLabel);
 
         this->setTouchEnabled(true);

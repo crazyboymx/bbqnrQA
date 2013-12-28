@@ -1,7 +1,8 @@
+#include "Config.h"
 #include "AppDelegate.h"
-#include "GameLayer.h"
 #include "Season.h"
 #include "Record.h"
+#include "SeasonLayer.h"
 
 USING_NS_CC;
 
@@ -9,8 +10,7 @@ AppDelegate::AppDelegate() {
 
 }
 
-AppDelegate::~AppDelegate() 
-{
+AppDelegate::~AppDelegate() {
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
@@ -18,6 +18,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCDirector* pDirector = CCDirector::sharedDirector();
     CCEGLView* pEGLView = CCEGLView::sharedOpenGLView();
     pDirector->setOpenGLView(pEGLView);
+
+    CCSize designSize = CCSizeMake(DESIGNED_WIDTH, DESIGNED_HEIGHT);
+    CCEGLView::sharedOpenGLView()->setDesignResolutionSize(designSize.width, designSize.height, kResolutionShowAll);
 
     std::vector<std::string> searchPaths;
     searchPaths.push_back("fonts");
@@ -28,15 +31,16 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
 
+    Record::instance()->load();
+
     // create a scene. it's an autorelease object
     CCScene *pScene = CCScene::create();
 
-    GameLayer* gamelayer = GameLayer::create();
     Season* s = new Season(Season::Season_1);
-    gamelayer->setLevel(s->level(2));
-    gamelayer->startLevel();
-    pScene->addChild(gamelayer);
-    Record::instance()->load();
+    SeasonLayer* sl = SeasonLayer::create();
+    sl->retain();
+    sl->initWithSeason(s);
+    pScene->addChild(sl);
 
     // run
     pDirector->runWithScene(pScene);

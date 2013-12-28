@@ -21,12 +21,14 @@ USING_NS_CC;
 
 class GameLayer : public CCLayer, private OptionObserver {
 public:
+    static GameLayer* sharedGameLayer();
+
     GameLayer();
     virtual ~GameLayer();
     CREATE_FUNC(GameLayer);
     virtual bool init();
 
-    void setLevel(Level* l) { m_level = l; }
+    void initWithLevel(Level* l) { m_level = l; }
     void startLevel();
 
     void ccTouchesEnded(CCSet* touches, CCEvent* event);
@@ -52,6 +54,8 @@ private:
     OptionLayer*    m_option_c;
     OptionLayer*    m_option_d;
     CCLabelTTF*     m_questionLabel;
+
+    static GameLayer* m_sharedLayer;
 };
 
 #endif // __GAMELAYER_H_

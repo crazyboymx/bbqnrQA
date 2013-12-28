@@ -11,6 +11,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/OptionLayer.cpp \
                    ../../Classes/SeasonLayer.cpp \
                    ../../Classes/GameLayer.cpp \
+                   ../../Classes/LevelNode.cpp \
                    \
                    ../../Classes/Question.cpp \
                    ../../Classes/Level.cpp \

@@ -9,6 +9,7 @@
  *
  ******************************************************************/
 
+#include "Config.h"
 #include "OptionLayer.h"
 #include <algorithm>
 
@@ -28,9 +29,9 @@ bool OptionLayer::init() {
 
         CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
         CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-        CCSize contentSize(visibleSize.width-100, 100);
+        CCSize contentSize(OPTIONLAYER_CONTENT_WIDTH, OPTIONLAYER_CONTENT_HEIGHT);
 
-        m_optionLabel = CCLabelTTF::create("", "Marker Felt.ttf", 40,
+        m_optionLabel = CCLabelTTF::create("", "Marker Felt.ttf", OPTION_TEXT_SIZE,
             contentSize, kCCTextAlignmentLeft, kCCVerticalTextAlignmentCenter);
         m_optionLabel->setAnchorPoint(CCPoint(0.0, 0.0));
         m_optionLabel->setPosition(CCPoint(0.0, 0.0));

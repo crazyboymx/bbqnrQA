@@ -27,9 +27,13 @@ public:
     void ccTouchesEnded(CCSet* touches, CCEvent* event);
     void registerWithTouchDispatcher();
 
-    void setSeason(Season* season);
+    void initWithSeason(Season* season);
+private:
+    void initLevelNode();
 private:
     Season* m_season;
+    CCLabelTTF* m_titleLabel;
+    CCArray* m_levelNodeArray;
 };
 
 #endif // __SEASONLAYER_H_
