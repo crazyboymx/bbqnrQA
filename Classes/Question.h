@@ -39,6 +39,7 @@ struct Option {
 };
 
 struct Question {
+    int id;
     string question;
     Option option;
     bool valid;

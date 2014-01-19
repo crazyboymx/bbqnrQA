@@ -12,6 +12,7 @@
 #ifndef __LEVELNODE_H_
 #define __LEVELNODE_H_
 
+#include "Config.h"
 #include <cocos2d.h>
 #include "Level.h"
 
@@ -27,10 +28,20 @@ public:
 
     void initWithLevel(Level* level);
     Level* level() const { return m_level; }
+    void updateLevelUI();
+    void setSeasonTitle(const string& title);
+
+private:
+    void updateStar(int star);
+    void hideStar();
 private:
     Level*          m_level;
-    CCLabelTTF*     m_levelLabel;
+    CCLabelTTF*     m_label;
+    CCLabelTTF*     m_seasonTitle;
     CCSprite*       m_levelSprite;
+    CCSpriteFrame*  m_levelSpriteFrameNorm;
+    CCSpriteFrame*  m_levelSpriteFrameGray;
+    CCSprite*       m_star[MAX_STAR_COUNT];
 };
 
 #endif // __LEVELNODE_H_

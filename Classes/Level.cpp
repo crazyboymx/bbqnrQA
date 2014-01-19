@@ -14,6 +14,9 @@
 #include <cstdlib>
 #include <algorithm>
 
+#define PASS_RATE       0.6
+#define TWO_STAR_RATE   0.8
+#define FULL_STAR_RATE  0.99
 Level::Level(int level, int seasonId) {
     m_level = level;
     m_seasonId = seasonId;
@@ -30,6 +33,7 @@ void Level::clearQuestions() {
 }
 
 void Level::addQuestion(Question q) {
+    q.id = m_questions.size()+1;
     m_questions.push_back(q);
 }
 
@@ -61,7 +65,7 @@ LevelRecord Level::record() const {
 }
 
 bool Level::fail() const {
-    return m_failCount >= questionCount() / 2;
+    return m_failCount >= questionCount() * (1 - PASS_RATE);
 }
 
 void Level::passCurrentQuestion() {
@@ -76,14 +80,14 @@ void Level::failCurrentQuestion() {
     Record::instance()->incTotalFail();
 }
 
-Question Level::nextQuesion() {
+Question Level::nextQuestion() {
     if (currentProgress() >= questionCount())
         return Question();
 
     return m_questions[m_progress++];
 }
 
-Question Level::prevQuesion() {
+Question Level::prevQuestion() {
     if (currentProgress() < 0)
         return Question();
 
@@ -98,17 +102,24 @@ void Level::shuffleQuestion() {
         if (pos != i)
             swap(m_questions[i], m_questions[pos]);
     }
+    for (int i = 0; i < count; i++) {
+        m_questions[i].id = i+1;
+    }
 }
 
 int Level::evaluateStars(int passCount) const {
     int count = questionCount();
-    if (passCount >= count) {
+    if (count <= 0)
+        return 0;
+
+    float passRate = passCount*1.0f/count;
+    if (passRate >= FULL_STAR_RATE) {
         return 3;
     }
-    else if (passCount >= (count - 2) ) {
+    else if (passRate >= TWO_STAR_RATE) {
         return 2;
     }
-    else if (pass(passCount)) {
+    else if (passRate >= PASS_RATE) {
         return 1;
     }
 
@@ -116,6 +127,6 @@ int Level::evaluateStars(int passCount) const {
 }
 
 bool Level::pass(int passCount) const {
-    return passCount > questionCount();
+    return passCount >= questionCount() * PASS_RATE;
 }
 

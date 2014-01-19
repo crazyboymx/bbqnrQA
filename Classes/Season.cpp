@@ -16,20 +16,20 @@
 
 using namespace cocos2d;
 
-string g_SeasonTitles[Season::MaxSeason] = {
-    "第一期灵水村上",
-    "第二期灵水村下",
-    "第三期沙漠上",
-    "第四期沙漠下",
-    "第五期云南水乡上",
-    "第六期云南水乡下",
-    "第七期烟台海岛上",
-    "第八期烟台海岛下",
-    "第九期白寺村上",
-    "第十期白寺村下"
+string g_SeasonTitles[MAX_SEASON] = {
+    "  第一期   灵水村上 ",
+    "  第二期   灵水村下 ",
+    "  第三期    沙漠上  ",
+    "  第四期    沙漠下  ",
+    "  第五期  云南水乡上",
+    "  第六期  云南水乡下",
+    "  第七期  烟台海岛上",
+    "  第八期  烟台海岛下",
+    "  第九期   白寺村上 ",
+    "  第十期   白寺村下 "
 };
 
-QuestionSet* g_SeasonQuestions[Season::MaxSeason] = {
+QuestionSet* g_SeasonQuestions[MAX_SEASON] = {
     new QuestionSet(QuestionSet::LinShuiCun_1),
     new QuestionSet(QuestionSet::LinShuiCun_2),
     new QuestionSet(QuestionSet::ShaMo_1),
@@ -47,26 +47,27 @@ Season::Season(Season::SeasonId id)
     , m_title(g_SeasonTitles[id])
     , m_locked(true)
 {
-    initLevels();
 }
 
 Season::~Season() {
     clearLevelData();
 }
 
-void Season::initLevels() {
+void Season::initLevels(int startLevel) {
     clearLevelData();
 
     QuestionSet* q = g_SeasonQuestions[m_id];
     int qCount = q->count();
-    int levelCount = qCount / MAX_LEVEL_QUESTION_COUNT+1;
+    int levelCount = qCount / MAX_LEVEL_QUESTION_COUNT+ ((qCount % MAX_LEVEL_QUESTION_COUNT) ? 1 : 0);
     for (int i = 0; i < levelCount; i++) {
-        Level* level = new Level(i+1, m_id);
+        Level* level = new Level(i+startLevel, m_id);
         int start = i * MAX_LEVEL_QUESTION_COUNT;
         int end = start + MAX_LEVEL_QUESTION_COUNT;
         for ( int j = start; j < end && j < qCount; j++) {
             level->addQuestion(q->question(j));
         }
+        if (level->level() == 1)
+            level->unlock();
         m_levels.insert(pair<int, Level*>(level->level(), level));
     }
 }

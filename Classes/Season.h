@@ -31,15 +31,13 @@ public:
         Season_7,
         Season_8,
         Season_9,
-        Season_10,
-        MaxSeason
+        Season_10
     };
-    static int seasonCount() { return MaxSeason; }
 
     Season(SeasonId id);
     virtual ~Season();
 
-    void initLevels();
+    void initLevels(int startLevel);
     void initRecord(const SeasonRecord& record);
     SeasonRecord record() const;
 
@@ -47,7 +45,7 @@ public:
     int levelCount() const { return m_levels.size(); }
     int starCount() const;
     bool pass() const;
-    Level* level(int index);
+    Level* level(int level);
 
     void unlock() { m_locked = false; }
     bool locked() const { return m_locked; }

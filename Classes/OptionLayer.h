@@ -28,7 +28,7 @@ public:
     virtual void onOptionSelected(OptionLayer* option) = 0;
 };
 
-class OptionLayer : public CCLayerColor {
+class OptionLayer : public CCLayer {
 public:
     OptionLayer();
     virtual ~OptionLayer();
@@ -43,11 +43,15 @@ public:
     void setOption(string option, bool isAnswer);
     bool isAnswer() const { return m_isAnswer; }
 
+    void showAnswerAnimation();
+
 private:
     string          m_option;
     bool            m_isAnswer;
     CCLabelTTF*     m_optionLabel;
     CCSprite*       m_bgSprite;
+    CCSprite*       m_correctSprite;
+    CCSprite*       m_wrongSprite;
     vector<OptionObserver*> m_observers;
 };
 

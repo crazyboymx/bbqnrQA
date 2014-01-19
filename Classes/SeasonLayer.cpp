@@ -57,7 +57,7 @@ void SeasonLayer::ccTouchesEnded(CCSet* touches, CCEvent* event) {
     CCARRAY_FOREACH(m_levelNodeArray, obj) {
         LevelNode* lvl = (LevelNode*)obj;
         if (lvl->boundingBox().containsPoint(location)) {
-            GameLayer* layer = GameLayer::sharedGameLayer();
+            GameLayer* layer = GameLayer::sharedLayer();
             layer->initWithLevel(lvl->level());
             layer->startLevel();
             CCScene* pScene = CCScene::create();
@@ -101,6 +101,6 @@ void SeasonLayer::initLevelNode() {
         }
         row++;
     }
-    CCLog("levelCount: %d, childCount: %d", levelCount, this->getChildrenCount());
+    //CCLog("levelCount: %d, childCount: %d", levelCount, this->getChildrenCount());
 }
 

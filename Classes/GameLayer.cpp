@@ -11,14 +11,18 @@
 
 #include "Config.h"
 #include "GameLayer.h"
+#include "MapLayer.h"
+#include "AudioManager.h"
 #include <cstdlib>
 #include <algorithm>
+
+#define ABOVE_TITLE_DIST    500
 
 using namespace cocos2d;
 
 GameLayer* GameLayer::m_sharedLayer = NULL;
 
-GameLayer* GameLayer::sharedGameLayer() {
+GameLayer* GameLayer::sharedLayer() {
     if (m_sharedLayer == NULL) {
         m_sharedLayer = GameLayer::create();
         m_sharedLayer->retain();
@@ -43,41 +47,52 @@ bool GameLayer::init() {
         CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
         CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
         CCSize optionContentSize(OPTIONLAYER_CONTENT_WIDTH, OPTIONLAYER_CONTENT_HEIGHT);
-        CCLog("origin %0.2f, %0.2f, visibleSize %0.2f, %0.2f", origin.x, origin.y, visibleSize.width, visibleSize.height);
+        //CCLog("origin %0.2f, %0.2f, visibleSize %0.2f, %0.2f", origin.x, origin.y, visibleSize.width, visibleSize.height);
 
+        m_layerBGSprite = CCSprite::createWithTexture(
+                CCTextureCache::sharedTextureCache()->textureForKey("game_bg.png"));
+        m_layerBGSprite->setAnchorPoint(CCPoint(0.0, 0.0));
+        m_layerBGSprite->setPosition(CCPoint(origin.x, origin.y));
+        this->addChild(m_layerBGSprite, 0);
+
+        m_questionLayerPosition = CCPoint(origin.x + visibleSize.width / 2, origin.y + (visibleSize.height - QUESTIONLAYER_CONTENT_HEIGHT));
+        m_questionLayer = QuestionLayer::create();
+        m_questionLayer->ignoreAnchorPointForPosition(false);
+        m_questionLayer->setPosition(m_questionLayerPosition + CCPoint(0, ABOVE_TITLE_DIST));
+        m_questionLayer->setAnchorPoint(CCPoint(0.5, 0.0));
+        this->addChild(m_questionLayer, 100);
+
+        m_optionAPosition = CCPoint(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 3 + 80);
         m_option_a = OptionLayer::create();
         m_option_a->ignoreAnchorPointForPosition(false);
-        m_option_a->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 3 + 60);
+        m_option_a->setPosition(m_questionLayerPosition + CCPoint(0, ABOVE_TITLE_DIST));
         m_option_a->setAnchorPoint(CCPoint(0.5f, 0.0f));
-        this->addChild(m_option_a);
         m_option_a->addObserver(this);
+        this->addChild(m_option_a, 99);
 
+        m_optionBPosition = CCPoint(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 2 + 80);
         m_option_b = OptionLayer::create();
         m_option_b->ignoreAnchorPointForPosition(false);
-        m_option_b->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 2 + 60);
+        m_option_b->setPosition(m_questionLayerPosition + CCPoint(0, ABOVE_TITLE_DIST));
         m_option_b->setAnchorPoint(CCPoint(0.5f, 0.0f));
-        this->addChild(m_option_b);
         m_option_b->addObserver(this);
+        this->addChild(m_option_b, 98);
 
+        m_optionCPosition = CCPoint(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 1 + 80);
         m_option_c = OptionLayer::create();
         m_option_c->ignoreAnchorPointForPosition(false);
-        m_option_c->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 1 + 60);
+        m_option_c->setPosition(m_questionLayerPosition + CCPoint(0, ABOVE_TITLE_DIST));
         m_option_c->setAnchorPoint(CCPoint(0.5f, 0.0f));
-        this->addChild(m_option_c);
         m_option_c->addObserver(this);
+        this->addChild(m_option_c, 97);
 
+        m_optionDPosition = CCPoint(origin.x + visibleSize.width / 2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 0 + 80);
         m_option_d = OptionLayer::create();
         m_option_d->ignoreAnchorPointForPosition(false);
-        m_option_d->setPosition(origin.x + visibleSize.width/2, origin.y + (optionContentSize.height + OPTIONLAYER_SPACING) * 0 + 60);
+        m_option_d->setPosition(m_questionLayerPosition + CCPoint(0, ABOVE_TITLE_DIST));
         m_option_d->setAnchorPoint(CCPoint(0.5f, 0.0f));
-        this->addChild(m_option_d);
         m_option_d->addObserver(this);
-
-        m_questionLabel = CCLabelTTF::create("", "Marker Felt.ttf", QUESTION_TEXT_SIZE,
-            CCSizeMake(GAMELAYER_QUESTION_WIDTH, GAMELAYER_QUESTION_HEIGHT), kCCTextAlignmentCenter, kCCVerticalTextAlignmentCenter);
-        m_questionLabel->setAnchorPoint(CCPoint(0.0, 0.0));
-        m_questionLabel->setPosition(CCPoint(origin.x, origin.y + (visibleSize.height - GAMELAYER_QUESTION_HEIGHT)));
-        this->addChild(m_questionLabel);
+        this->addChild(m_option_d, 96);
 
         this->setTouchEnabled(true);
         this->setKeypadEnabled(true);
@@ -85,6 +100,11 @@ bool GameLayer::init() {
     } while (0);
 
     return bRet;
+}
+
+void GameLayer::initWithLevel(Level* lvl) {
+    m_level = lvl;
+    m_questionLayer->initStar();
 }
 
 void GameLayer::startLevel() {
@@ -97,14 +117,32 @@ void GameLayer::startLevel() {
 }
 
 void GameLayer::nextQuestion() {
-    m_question = m_level->nextQuesion();
-    if (m_question.valid)
-        updateQuestionUI();
+    m_question = m_level->nextQuestion();
+    if (m_question.valid) {
+        CCFiniteTimeAction *endCallBack = CCCallFunc::create(this,
+                callfunc_selector(GameLayer::questionEndAnimation));
+        CCFiniteTimeAction* delayAction = CCDelayTime::create(1.2f);
+        CCFiniteTimeAction *updateCallBack = CCCallFunc::create(this,
+                callfunc_selector(GameLayer::updateQuestionUI));
+        CCFiniteTimeAction *startCallBack = CCCallFunc::create(this,
+                callfunc_selector(GameLayer::questionStartAnimation));
+        if (m_question.id > 1) {
+            this->runAction(CCSpawn::create(endCallBack,
+                        CCSequence::create(delayAction, updateCallBack, startCallBack, NULL), NULL));
+        }
+        else {
+            this->runAction(CCSequence::create(updateCallBack, startCallBack, NULL));
+        }
+    }
     else
         levelComplete();
 }
 
 void GameLayer::onOptionSelected(OptionLayer* option) {
+    if (m_level->fail())
+        return;
+
+    option->showAnswerAnimation();
     if (option->isAnswer())
         answerCorrect();
     else
@@ -112,7 +150,7 @@ void GameLayer::onOptionSelected(OptionLayer* option) {
 }
 
 void GameLayer::updateQuestionUI() {
-    m_questionLabel->setString(m_question.question.c_str());
+    m_questionLayer->setQuestionTitle(m_question.question);
     int opt[4] = {1, 2, 3, 4};
     for (int i = 0; i < 4; i++) {
         int s = rand() % 4;
@@ -133,21 +171,34 @@ void GameLayer::updateQuestionUI() {
 }
 
 void GameLayer::answerCorrect() {
+    m_level->passCurrentQuestion();
+    m_questionLayer->updateStar(m_level->starCount());
     if (m_levelPassed == false && m_level->pass()) {
         m_levelPassed = true;
         levelPass();
     }
-    nextQuestion();
+    CCFiniteTimeAction* delayAction = CCDelayTime::create(0.8f);
+    CCFiniteTimeAction *callBack = CCCallFunc::create(this, callfunc_selector(GameLayer::nextQuestion));
+    this->runAction(CCSequence::create(delayAction, callBack, NULL));
 }
 
 void GameLayer::answerWrong() {
+    m_level->failCurrentQuestion();
+    CCFiniteTimeAction* delayAction = CCDelayTime::create(0.8f);
+    CCFiniteTimeAction *callBack;
     if (m_level->fail())
-        levelFail();
+        callBack = CCCallFunc::create(this, callfunc_selector(GameLayer::levelFail));
     else
-        nextQuestion();
+        callBack = CCCallFunc::create(this, callfunc_selector(GameLayer::nextQuestion));
+    this->runAction(CCSequence::create(delayAction, callBack, NULL));
 }
 
 void GameLayer::levelComplete() {
+    MapLayer* layer = MapLayer::sharedLayer();
+    CCScene* pScene = CCScene::create();
+    pScene->addChild(layer);
+    CCTransitionFade* transitionScene = CCTransitionFade::create(1.0, pScene,ccWHITE);
+    CCDirector::sharedDirector()->replaceScene(transitionScene);
 }
 
 void GameLayer::levelPass() {
@@ -157,8 +208,41 @@ void GameLayer::levelFail() {
     levelComplete();
 }
 
+//--------------------Animations-----------------------
+void GameLayer::questionEndAnimation() {
+    float t = 0.7f;
+    CCFiniteTimeAction* action = CCEaseBackIn::create(CCMoveTo::create(t, m_questionLayerPosition+CCPoint(0, ABOVE_TITLE_DIST)));
+    m_questionLayer->runAction(action);
+
+    action = CCEaseBackIn::create(CCMoveTo::create(t, m_questionLayerPosition+CCPoint(0, ABOVE_TITLE_DIST)));
+    m_option_a->runAction(action);
+    action = CCEaseBackIn::create(CCMoveTo::create(t, m_questionLayerPosition+CCPoint(0, ABOVE_TITLE_DIST)));
+    m_option_b->runAction(action);
+    action = CCEaseBackIn::create(CCMoveTo::create(t, m_questionLayerPosition+CCPoint(0, ABOVE_TITLE_DIST)));
+    m_option_c->runAction(action);
+    action = CCEaseBackIn::create(CCMoveTo::create(t, m_questionLayerPosition+CCPoint(0, ABOVE_TITLE_DIST)));
+    m_option_d->runAction(action);
+    AudioManager::instance()->playEffect("chainUp.mp3");
+}
+
+void GameLayer::questionStartAnimation() {
+    float t = 0.7f;
+    CCFiniteTimeAction* action = CCEaseBackOut::create(CCMoveTo::create(t, m_questionLayerPosition));
+    m_questionLayer->runAction(action);
+
+    action = CCEaseBackOut::create(CCMoveTo::create(t, m_optionAPosition));
+    m_option_a->runAction(action);
+    action = CCEaseBackOut::create(CCMoveTo::create(t, m_optionBPosition));
+    m_option_b->runAction(action);
+    action = CCEaseBackOut::create(CCMoveTo::create(t, m_optionCPosition));
+    m_option_c->runAction(action);
+    action = CCEaseBackOut::create(CCMoveTo::create(t, m_optionDPosition));
+    m_option_d->runAction(action);
+    AudioManager::instance()->playEffect("chainDown.mp3");
+}
+
 void GameLayer::ccTouchesEnded(CCSet* touches, CCEvent* event) {
-    CCLog("touch in GameLayer");
+    //CCLog("touch in GameLayer");
 }
 
 void GameLayer::registerWithTouchDispatcher() {

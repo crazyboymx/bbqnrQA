@@ -17,11 +17,6 @@
 
 using namespace std;
 
-struct Config {
-    bool mute;
-    bool bgMusic;
-};
-
 struct LevelRecord {
     int level;
     int passCount;
@@ -56,7 +51,6 @@ protected:
     Record(const Record&) { }
 
 private:
-    Config m_config;
     map<int, SeasonRecord> m_record;
     int m_totalPass;
     int m_totalFail;

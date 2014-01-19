@@ -14,6 +14,7 @@
 
 #include <cocos2d.h>
 #include "OptionLayer.h"
+#include "QuestionLayer.h"
 #include "Level.h"
 
 using namespace std;
@@ -21,14 +22,14 @@ USING_NS_CC;
 
 class GameLayer : public CCLayer, private OptionObserver {
 public:
-    static GameLayer* sharedGameLayer();
+    static GameLayer* sharedLayer();
 
     GameLayer();
     virtual ~GameLayer();
     CREATE_FUNC(GameLayer);
     virtual bool init();
 
-    void initWithLevel(Level* l) { m_level = l; }
+    void initWithLevel(Level* lvl);
     void startLevel();
 
     void ccTouchesEnded(CCSet* touches, CCEvent* event);
@@ -44,6 +45,9 @@ private:
     void levelPass();
     void levelFail();
 
+    void questionEndAnimation();
+    void questionStartAnimation();
+
 private:
     Level* m_level;
     bool m_levelPassed;
@@ -53,7 +57,14 @@ private:
     OptionLayer*    m_option_b;
     OptionLayer*    m_option_c;
     OptionLayer*    m_option_d;
-    CCLabelTTF*     m_questionLabel;
+    QuestionLayer*  m_questionLayer;
+    CCSprite*       m_layerBGSprite;
+
+    CCPoint         m_questionLayerPosition;
+    CCPoint         m_optionAPosition;
+    CCPoint         m_optionBPosition;
+    CCPoint         m_optionCPosition;
+    CCPoint         m_optionDPosition;
 
     static GameLayer* m_sharedLayer;
 };

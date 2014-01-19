@@ -9,10 +9,16 @@ LOCAL_MODULE_FILENAME := libcocos2dcpp
 LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/AppDelegate.cpp \
                    ../../Classes/OptionLayer.cpp \
-                   ../../Classes/SeasonLayer.cpp \
+                   ../../Classes/QuestionLayer.cpp \
+                   ../../Classes/BackGroundLayer.cpp \
+                   ../../Classes/MenuLayer.cpp \
+                   ../../Classes/MapLayer.cpp \
                    ../../Classes/GameLayer.cpp \
+                   ../../Classes/AvatarLayer.cpp \
+                   ../../Classes/SettingLayer.cpp \
                    ../../Classes/LevelNode.cpp \
                    \
+                   ../../Classes/AudioManager.cpp \
                    ../../Classes/Question.cpp \
                    ../../Classes/Level.cpp \
                    ../../Classes/Season.cpp \

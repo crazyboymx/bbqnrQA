@@ -25,7 +25,7 @@ Record* Record::instance() {
 
 void Record::load() {
     string dbPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath() + "save.db";
-    cocos2d::CCLog("dbPath: %s", dbPath.c_str());
+    //cocos2d::CCLog("dbPath: %s", dbPath.c_str());
     FILE* fp = fopen(dbPath.c_str(), "rb");
     if (fp == NULL)
         return;
@@ -46,13 +46,12 @@ void Record::load() {
         }
         addSeasonRecord(sr);
     }
-    fread(&this->m_config, sizeof(Config), 1, fp);
     fclose(fp);
 }
 
 void Record::save() {
     string dbPath = cocos2d::CCFileUtils::sharedFileUtils()->getWritablePath() + "save.db";
-    cocos2d::CCLog("dbPath: %s", dbPath.c_str());
+    //cocos2d::CCLog("dbPath: %s", dbPath.c_str());
     FILE* fp = fopen(dbPath.c_str(), "wb");
     if (fp == NULL)
         return;
@@ -71,7 +70,6 @@ void Record::save() {
             fwrite(&(pos->second.record[i]), sizeof(LevelRecord), 1, fp);
         }
     }
-    fwrite(&this->m_config, sizeof(Config), 1, fp);
     fclose(fp);
 }
 

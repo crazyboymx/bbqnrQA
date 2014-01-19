@@ -50,8 +50,8 @@ public:
     void failCurrentQuestion();
     void unlock() { m_locked = false; }
     void lock() { m_locked = true; }
-    Question nextQuesion();
-    Question prevQuesion();
+    Question nextQuestion();
+    Question prevQuestion();
     void shuffleQuestion();
 
 private:
